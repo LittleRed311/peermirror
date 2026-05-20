@@ -3,65 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="CastLink phone sender — share your screen to a connected TV or monitor.">
-  <title>CastLink — Phone Sender</title>
+  <meta name="description" content="CastLink — send your screen to a connected TV or monitor.">
+  <title>CastLink — Sender</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Background orbs -->
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-
   <a href="index.html" class="back-link" id="back-link">← Back</a>
 
-  <!-- Join State -->
-  <div class="glass-card fade-in" id="join-screen">
-    <div class="logo-icon">📱</div>
-    <h1 class="app-title">Phone Sender</h1>
-    <p class="app-subtitle">Enter the code shown on your TV</p>
+  <!-- Join -->
+  <div class="container" id="join-screen">
+    <h1>Send to TV</h1>
+    <p class="subtitle">Enter the 6-digit code shown on your TV</p>
 
-    <div class="code-input-group" id="code-input-group">
-      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="0" aria-label="Digit 1" id="code-0">
-      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="1" aria-label="Digit 2" id="code-1">
-      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="2" aria-label="Digit 3" id="code-2">
-      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="3" aria-label="Digit 4" id="code-3">
-      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="4" aria-label="Digit 5" id="code-4">
-      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="5" aria-label="Digit 6" id="code-5">
+    <div class="code-inputs" id="code-input-group">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 1" id="code-0">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 2" id="code-1">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 3" id="code-2">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 4" id="code-3">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 5" id="code-4">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 6" id="code-5">
     </div>
 
-    <button class="btn btn-primary" id="btn-connect" disabled>
-      <span class="btn-icon">🔗</span>
-      Connect to TV
-    </button>
+    <!-- iOS notice -->
+    <div class="status status-info hidden" id="ios-notice">
+      ⚠️ Screen sharing is not supported on iPhones. Your camera will be used instead. For screen sharing, use an Android device or laptop.
+    </div>
+
+    <button class="btn btn-primary" id="btn-connect" disabled>Connect & Share</button>
 
     <div class="status hidden" id="status">
-      <span class="status-dot"></span>
+      <span class="dot dot-pulse"></span>
       <span id="status-text"></span>
     </div>
   </div>
 
-  <!-- Sharing State -->
-  <div class="glass-card fade-in hidden" id="sharing-screen">
-    <div class="logo-icon">📡</div>
-    <h1 class="app-title">Sharing</h1>
-    <p class="app-subtitle">Your screen is being cast to the TV</p>
+  <!-- Sharing -->
+  <div class="container hidden" id="sharing-screen">
+    <h1>Sharing</h1>
+    <p class="subtitle" id="sharing-label">Your screen is being sent to the TV</p>
 
-    <div class="preview-container active" id="preview-container">
+    <div class="preview active" id="preview-container">
       <video id="local-preview" autoplay playsinline muted></video>
     </div>
 
-    <div class="status status-connected" id="sharing-status">
-      <span class="status-dot"></span>
-      <span>Streaming to TV</span>
+    <div class="status status-connected" style="margin-top: 16px;">
+      <span class="dot dot-green"></span>
+      Streaming to TV
     </div>
 
-    <div class="btn-group">
-      <button class="btn btn-secondary" id="btn-stop">
-        <span class="btn-icon">⏹</span>
-        Stop Sharing
-      </button>
-    </div>
+    <button class="btn" id="btn-stop" style="margin-top: 16px;">Stop Sharing</button>
   </div>
 
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
