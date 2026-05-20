@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CastLink phone sender — share your screen to a connected TV or monitor.">
+  <title>CastLink — Phone Sender</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Background orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <a href="index.html" class="back-link" id="back-link">← Back</a>
+
+  <!-- Join State -->
+  <div class="glass-card fade-in" id="join-screen">
+    <div class="logo-icon">📱</div>
+    <h1 class="app-title">Phone Sender</h1>
+    <p class="app-subtitle">Enter the code shown on your TV</p>
+
+    <div class="code-input-group" id="code-input-group">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="0" aria-label="Digit 1" id="code-0">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="1" aria-label="Digit 2" id="code-1">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="2" aria-label="Digit 3" id="code-2">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="3" aria-label="Digit 4" id="code-3">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="4" aria-label="Digit 5" id="code-4">
+      <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="5" aria-label="Digit 6" id="code-5">
+    </div>
+
+    <button class="btn btn-primary" id="btn-connect" disabled>
+      <span class="btn-icon">🔗</span>
+      Connect to TV
+    </button>
+
+    <div class="status hidden" id="status">
+      <span class="status-dot"></span>
+      <span id="status-text"></span>
+    </div>
+  </div>
+
+  <!-- Sharing State -->
+  <div class="glass-card fade-in hidden" id="sharing-screen">
+    <div class="logo-icon">📡</div>
+    <h1 class="app-title">Sharing</h1>
+    <p class="app-subtitle">Your screen is being cast to the TV</p>
+
+    <div class="preview-container active" id="preview-container">
+      <video id="local-preview" autoplay playsinline muted></video>
+    </div>
+
+    <div class="status status-connected" id="sharing-status">
+      <span class="status-dot"></span>
+      <span>Streaming to TV</span>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-secondary" id="btn-stop">
+        <span class="btn-icon">⏹</span>
+        Stop Sharing
+      </button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="js/phone.js"></script>
+</body>
+</html>

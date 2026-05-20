@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CastLink TV receiver — display your phone's screen share on this device.">
+  <title>CastLink — TV Display</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Background orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <a href="index.html" class="back-link" id="back-link">← Back</a>
+
+  <!-- Waiting State -->
+  <div class="glass-card fade-in tv-waiting" id="waiting-screen">
+    <div class="logo-icon">🖥️</div>
+    <h1 class="app-title">TV Display</h1>
+    <p class="tv-instruction">Enter this code on your phone to connect</p>
+
+    <div class="room-code-display" id="room-code-display">
+      <!-- Digits populated by JS -->
+    </div>
+
+    <div class="status status-waiting" id="status">
+      <span class="status-dot"></span>
+      <span id="status-text">Waiting for phone to connect…</span>
+    </div>
+  </div>
+
+  <!-- Fullscreen Video -->
+  <div class="video-container" id="video-container">
+    <video id="remote-video" autoplay playsinline></video>
+    <div class="video-overlay">
+      <button class="overlay-btn" id="btn-fullscreen" title="Toggle Fullscreen">⛶</button>
+      <button class="overlay-btn" id="btn-disconnect" title="Disconnect">✕</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="js/tv.js"></script>
+</body>
+</html>
