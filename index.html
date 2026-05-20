@@ -3,42 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cast your phone screen to any TV or monitor browser — no app install needed. Just connect with a code and share.">
-  <title>CastLink — Phone to TV Screen Sharing</title>
+  <meta name="description" content="CastLink — share your screen to any TV or monitor browser.">
+  <title>CastLink</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Background orbs -->
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
+  <div class="container">
+    <h1>CastLink</h1>
+    <p class="subtitle">Share your screen to any TV or monitor browser. No app needed.</p>
 
-  <div class="glass-card fade-in">
-    <div class="logo-icon">📺</div>
-    <h1 class="app-title">CastLink</h1>
-    <p class="app-subtitle">Share your phone screen to any TV or monitor — no app needed</p>
+    <a href="tv.html" class="btn btn-primary">I'm the TV / Monitor</a>
+    <a href="phone.html" class="btn">I'm the Sender</a>
 
     <div class="divider"></div>
 
-    <p class="section-label">I'm using a…</p>
+    <p style="color: #666; font-size: 0.8125rem; line-height: 1.6;">
+      Open this page on both devices. The TV generates a code — enter it on the sender to connect.
+    </p>
 
-    <div class="btn-group">
-      <a href="tv.html" class="btn btn-primary" id="btn-tv">
-        <span class="btn-icon">🖥️</span>
-        TV / Monitor
-      </a>
-      <a href="phone.html" class="btn btn-secondary" id="btn-phone">
-        <span class="btn-icon">📱</span>
-        Phone / Tablet
-      </a>
-    </div>
-
-    <div style="margin-top: 32px; text-align: center;">
-      <p style="color: var(--text-muted); font-size: 0.8125rem; line-height: 1.6;">
-        Open this page on both devices.<br>
-        The TV generates a code. Enter it on your phone to connect.
-      </p>
-    </div>
+    <p style="color: #555; font-size: 0.75rem; line-height: 1.6; margin-top: 16px;">
+      ⚠️ Screen sharing is not supported on iPhone browsers. Use an Android device or a laptop/desktop to send your screen.
+    </p>
   </div>
 </body>
 </html>
