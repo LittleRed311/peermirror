@@ -1,0 +1,602 @@
+/* ============================================
+   TV Casting App — Design System
+   Dark mode, glassmorphism, premium aesthetics
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* --- CSS Custom Properties --- */
+:root {
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #111128;
+  --bg-glass: rgba(255, 255, 255, 0.04);
+  --bg-glass-hover: rgba(255, 255, 255, 0.08);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-hover: rgba(255, 255, 255, 0.15);
+
+  --text-primary: #f0f0f8;
+  --text-secondary: rgba(240, 240, 248, 0.6);
+  --text-muted: rgba(240, 240, 248, 0.35);
+
+  --accent-blue: #6366f1;
+  --accent-purple: #a855f7;
+  --accent-pink: #ec4899;
+  --accent-cyan: #22d3ee;
+  --accent-green: #34d399;
+
+  --gradient-primary: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+  --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+  --gradient-bg: radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                 radial-gradient(ellipse at 80% 20%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+                 radial-gradient(ellipse at 50% 80%, rgba(236, 72, 153, 0.04) 0%, transparent 50%);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--gradient-bg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Glass Card --- */
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+  position: relative;
+  z-index: 1;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  max-width: 480px;
+  width: 90vw;
+}
+
+.glass-card:hover {
+  border-color: var(--border-glass-hover);
+}
+
+/* --- Typography --- */
+.app-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.app-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  text-align: center;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 32px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  width: 100%;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.btn:hover::before {
+  opacity: 1;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary::before {
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: var(--bg-glass-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-glass);
+}
+
+.btn-secondary::before {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-secondary:hover {
+  border-color: var(--border-glass-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-icon {
+  font-size: 1.5rem;
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* --- Room Code Display --- */
+.room-code-display {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.room-code-digit {
+  width: 56px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  background: var(--bg-glass-hover);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  animation: digitAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.room-code-digit:nth-child(1) { animation-delay: 0.05s; }
+.room-code-digit:nth-child(2) { animation-delay: 0.1s; }
+.room-code-digit:nth-child(3) { animation-delay: 0.15s; }
+.room-code-digit:nth-child(4) { animation-delay: 0.2s; }
+.room-code-digit:nth-child(5) { animation-delay: 0.25s; }
+.room-code-digit:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes digitAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* --- Code Input --- */
+.code-input-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.code-input {
+  width: 48px;
+  height: 64px;
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  font-family: inherit;
+  background: var(--bg-glass-hover);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+  caret-color: var(--accent-blue);
+  font-variant-numeric: tabular-nums;
+}
+
+.code-input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.code-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* --- Status Indicator --- */
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 24px;
+  transition: all var(--transition-base);
+}
+
+.status-waiting {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent-blue);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.status-connected {
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--accent-green);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+.status-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-waiting .status-dot {
+  background: var(--accent-blue);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-connected .status-dot {
+  background: var(--accent-green);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.status-error .status-dot {
+  background: #ef4444;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* --- Video Container --- */
+.video-container {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-container.active {
+  display: flex;
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 101;
+  display: flex;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.video-container:hover .video-overlay {
+  opacity: 1;
+}
+
+.overlay-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.overlay-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* --- Preview Video (phone) --- */
+.preview-container {
+  margin-top: 24px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-glass);
+  aspect-ratio: 16/9;
+  background: var(--bg-secondary);
+  display: none;
+}
+
+.preview-container.active {
+  display: block;
+}
+
+.preview-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* --- Divider --- */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border-glass);
+  margin: 32px 0;
+}
+
+/* --- Back Link --- */
+.back-link {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(12px);
+  transition: all var(--transition-base);
+}
+
+.back-link:hover {
+  color: var(--text-primary);
+  border-color: var(--border-glass-hover);
+  background: var(--bg-glass-hover);
+}
+
+/* --- Floating Orbs (background decoration) --- */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  animation: orbFloat 20s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 400px;
+  height: 400px;
+  background: rgba(99, 102, 241, 0.08);
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 350px;
+  height: 350px;
+  background: rgba(168, 85, 247, 0.06);
+  bottom: -80px;
+  right: -80px;
+  animation-delay: -7s;
+}
+
+.orb-3 {
+  width: 300px;
+  height: 300px;
+  background: rgba(236, 72, 153, 0.05);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -14s;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.05); }
+  50% { transform: translate(-20px, 30px) scale(0.95); }
+  75% { transform: translate(20px, 20px) scale(1.02); }
+}
+
+/* --- Fade In Animation --- */
+.fade-in {
+  animation: fadeIn 0.6s ease-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Logo Icon --- */
+.logo-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--gradient-subtle);
+  border: 1px solid var(--border-glass);
+  font-size: 2rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 480px) {
+  .glass-card {
+    padding: 32px 24px;
+    border-radius: var(--radius-md);
+  }
+
+  .room-code-digit {
+    width: 44px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .code-input {
+    width: 40px;
+    height: 56px;
+    font-size: 1.5rem;
+  }
+
+  .btn {
+    padding: 14px 24px;
+    font-size: 0.9375rem;
+  }
+}
+
+/* --- TV Fullscreen Specific --- */
+.tv-waiting {
+  text-align: center;
+}
+
+.tv-waiting .app-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.tv-instruction {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+/* --- Connection animation --- */
+.connecting-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid var(--border-glass);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Hidden utility --- */
+.hidden {
+  display: none !important;
+}
