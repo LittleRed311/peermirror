@@ -52,6 +52,12 @@
   // --- Show the fullscreen video player ---
   function showVideo(stream) {
     remoteVideo.srcObject = stream;
+
+    // Ensure the video plays (some browsers need explicit play)
+    remoteVideo.play().catch((err) => {
+      console.warn('[TV] Video autoplay blocked, user interaction needed:', err);
+    });
+
     videoContainer.classList.add('active');
     waitingScreen.classList.add('hidden');
     backLink.classList.add('hidden');
@@ -77,11 +83,24 @@
 
     setStatus('waiting', 'Waiting for phone to connect…');
 
-    // Clean up old peer and create a new one with same code
+    // Clean up old peer and create a new one
     if (peer) {
       peer.destroy();
     }
     initPeer();
+  }
+
+  // --- Create a silent dummy stream to answer with ---
+  // PeerJS works more reliably when both sides provide a stream.
+  // We create a tiny silent canvas stream so the handshake completes properly.
+  function createDummyStream() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 2;
+    canvas.height = 2;
+    const ctx = canvas.getContext('2d');
+    ctx.fillRect(0, 0, 2, 2);
+    const stream = canvas.captureStream(0); // 0 fps = static frame
+    return stream;
   }
 
   // --- Initialize PeerJS ---
@@ -92,11 +111,17 @@
     const peerId = `castlink-${roomCode}`;
 
     peer = new Peer(peerId, {
+      host: '0.peerjs.com',
+      port: 443,
+      secure: true,
+      debug: 2, // Log warnings and errors to console
       config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
           { urls: 'stun:stun1.l.google.com:19302' },
           { urls: 'stun:stun2.l.google.com:19302' },
+          { urls: 'stun:stun3.l.google.com:19302' },
+          { urls: 'stun:stun4.l.google.com:19302' },
         ]
       }
     });
@@ -109,12 +134,12 @@
     peer.on('call', (call) => {
       console.log('[TV] Incoming call from phone');
       currentCall = call;
+      setStatus('waiting', 'Phone connecting… establishing stream');
 
-      // Answer the call (no local media to send back)
-      call.answer();
-
+      // IMPORTANT: Attach the stream listener BEFORE answering
+      // to avoid missing the event
       call.on('stream', (remoteStream) => {
-        console.log('[TV] Receiving remote stream');
+        console.log('[TV] Receiving remote stream, tracks:', remoteStream.getTracks().length);
         setStatus('connected', 'Connected — receiving screen share');
         showVideo(remoteStream);
       });
@@ -129,6 +154,19 @@
         console.error('[TV] Call error:', err);
         setStatus('error', 'Connection lost. Waiting for reconnect…');
         setTimeout(returnToWaiting, 2000);
+      });
+
+      // Answer with a dummy stream for reliable two-way WebRTC handshake
+      const dummyStream = createDummyStream();
+      call.answer(dummyStream);
+      console.log('[TV] Answered call with dummy stream');
+    });
+
+    // Also listen for data connections (used for handshake confirmation)
+    peer.on('connection', (conn) => {
+      console.log('[TV] Data connection from phone');
+      conn.on('open', () => {
+        conn.send({ type: 'tv-ready' });
       });
     });
 
@@ -148,7 +186,9 @@
     peer.on('disconnected', () => {
       console.log('[TV] Peer disconnected, attempting reconnect…');
       setStatus('waiting', 'Reconnecting…');
-      peer.reconnect();
+      if (!peer.destroyed) {
+        peer.reconnect();
+      }
     });
   }
 
