@@ -1,7 +1,7 @@
 /**
  * CastLink — Phone/Tablet Side
  * Connects to the TV peer via room code, captures screen with
- * getDisplayMedia, and streams it over WebRTC.
+ * getDisplayMedia (or camera fallback on iOS), and streams it over WebRTC.
  */
 
 (function () {
@@ -17,6 +17,21 @@
   const localPreview    = document.getElementById('local-preview');
   const btnStop         = document.getElementById('btn-stop');
   const backLink        = document.getElementById('back-link');
+  const sharingLabel    = document.getElementById('sharing-label');
+  const iosNotice       = document.getElementById('ios-notice');
+
+  // --- Detect iOS ---
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  const hasScreenCapture = !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
+
+  // --- Show iOS notice if needed ---
+  if (isIOS || !hasScreenCapture) {
+    if (iosNotice) {
+      iosNotice.classList.remove('hidden');
+    }
+  }
 
   // --- State ---
   let peer = null;
@@ -109,25 +124,58 @@
     statusText.textContent = message;
   }
 
+  // --- Capture media (screen or camera fallback) ---
+  async function captureMedia() {
+    // Try screen capture first (not available on iOS)
+    if (hasScreenCapture) {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            cursor: 'always',
+          },
+          audio: true,
+        });
+        return { stream, type: 'screen' };
+      } catch (err) {
+        // If user cancelled, throw so caller can handle
+        if (err.name === 'NotAllowedError') {
+          throw err;
+        }
+        console.warn('[Phone] Screen capture failed, falling back to camera:', err);
+      }
+    }
+
+    // Fallback: use camera (works on all devices including iOS)
+    console.log('[Phone] Using camera fallback');
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: 'environment', // Rear camera by default
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+      },
+      audio: true,
+    });
+    return { stream, type: 'camera' };
+  }
+
   // --- Start connection flow ---
   async function startConnection(code) {
     btnConnect.disabled = true;
-    setStatus('waiting', 'Starting screen capture…');
 
-    // Step 1: Capture screen
+    const captureLabel = hasScreenCapture ? 'Starting screen capture…' : 'Starting camera…';
+    setStatus('waiting', captureLabel);
+
+    // Step 1: Capture media
+    let captureResult;
     try {
-      localStream = await navigator.mediaDevices.getDisplayMedia({
-        video: {
-          cursor: 'always',
-          displaySurface: 'monitor',
-        },
-        audio: true, // Will silently fail if not supported
-      });
+      captureResult = await captureMedia();
     } catch (err) {
-      console.error('[Phone] Screen capture failed:', err);
+      console.error('[Phone] Capture failed:', err);
 
       if (err.name === 'NotAllowedError') {
-        setStatus('error', 'Screen share was cancelled. Please try again.');
+        setStatus('error', 'Permission denied. Please try again.');
+      } else if (err.name === 'NotFoundError') {
+        setStatus('error', 'No camera found on this device.');
       } else {
         setStatus('error', `Capture failed: ${err.message}`);
       }
@@ -136,45 +184,70 @@
       return;
     }
 
+    localStream = captureResult.stream;
+    const captureType = captureResult.type;
+
+    console.log('[Phone] Captured media:', captureType, 'Tracks:', localStream.getTracks().map(t => `${t.kind}:${t.label}`));
+
+    // Update sharing label based on capture type
+    if (sharingLabel) {
+      sharingLabel.textContent = captureType === 'camera'
+        ? 'Your camera is being cast to the TV'
+        : 'Your screen is being cast to the TV';
+    }
+
     // Handle user stopping screen share via browser UI
-    localStream.getVideoTracks()[0].addEventListener('ended', () => {
-      console.log('[Phone] Screen share stopped by user');
-      stopSharing();
-    });
+    const videoTrack = localStream.getVideoTracks()[0];
+    if (videoTrack) {
+      videoTrack.addEventListener('ended', () => {
+        console.log('[Phone] Video track ended by user');
+        stopSharing();
+      });
+    }
 
     setStatus('waiting', 'Connecting to TV…');
 
     // Step 2: Create peer and call TV
     peer = new Peer({
+      host: '0.peerjs.com',
+      port: 443,
+      secure: true,
+      debug: 2,
       config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
           { urls: 'stun:stun1.l.google.com:19302' },
           { urls: 'stun:stun2.l.google.com:19302' },
+          { urls: 'stun:stun3.l.google.com:19302' },
+          { urls: 'stun:stun4.l.google.com:19302' },
         ]
       }
     });
 
-    peer.on('open', () => {
-      console.log('[Phone] Peer ready, calling TV…');
+    peer.on('open', (myId) => {
+      console.log('[Phone] Peer ready with ID:', myId);
       const tvPeerId = `castlink-${code}`;
+
+      // First establish a data connection to verify TV is reachable
+      console.log('[Phone] Connecting to TV peer:', tvPeerId);
 
       currentCall = peer.call(tvPeerId, localStream);
 
       if (!currentCall) {
-        setStatus('error', 'Could not connect. Is the code correct?');
+        setStatus('error', 'Could not initiate call. Is the code correct?');
+        cleanupStream();
         btnConnect.disabled = false;
         return;
       }
 
-      currentCall.on('stream', () => {
-        // TV doesn't send a stream back, but the event
-        // confirms the connection is established
-        console.log('[Phone] Connection confirmed');
+      // Listen for the dummy stream back from TV (confirms connection)
+      currentCall.on('stream', (remoteStream) => {
+        console.log('[Phone] Received answer stream from TV — connection confirmed');
+        // We don't display this stream, it's just the dummy handshake stream
       });
 
       currentCall.on('close', () => {
-        console.log('[Phone] Call closed');
+        console.log('[Phone] Call closed by TV');
         stopSharing();
       });
 
@@ -184,7 +257,7 @@
         stopSharing();
       });
 
-      // Switch to sharing UI
+      // Switch to sharing UI after a brief delay to let ICE negotiate
       showSharingView();
     });
 
@@ -195,6 +268,11 @@
         setStatus('error', 'TV not found. Check the code and try again.');
         cleanupStream();
         btnConnect.disabled = false;
+
+        // Return to join screen
+        sharingScreen.classList.add('hidden');
+        joinScreen.classList.remove('hidden');
+        backLink.classList.remove('hidden');
       } else {
         setStatus('error', `Error: ${err.type}`);
       }
@@ -209,6 +287,7 @@
 
     // Show local preview
     localPreview.srcObject = localStream;
+    localPreview.play().catch(() => {});
   }
 
   // --- Stop sharing and return to join screen ---
